@@ -462,6 +462,7 @@ export class MarkdownPreviewEnhancedView {
 
     // set title
     previewPanel.title = `Preview ${path.basename(sourceUri.fsPath)}`;
+    previewPanel.reveal(viewOptions.viewColumn, viewOptions.preserveFocus);
 
     // init markdown engine
     let initialLine: number | undefined;
