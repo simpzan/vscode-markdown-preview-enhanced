@@ -14,9 +14,48 @@ import {
 
 let editorScrollDelay = Date.now();
 
+const vsc = vscode;
+const log = console.log.bind(console);
+function registerCommand(
+  context: vscode.ExtensionContext,
+  command: string,
+  callback: (...args: any[]) => any,
+  thisArg?: any,
+) {
+  context.subscriptions.push(
+    vsc.commands.registerCommand(command, callback, thisArg),
+  );
+}
+
+async function handleInsertImage() {
+  const fromUris = await vsc.window.showOpenDialog({});
+  if (!fromUris || fromUris.length < 1) return;
+  const fromUri = fromUris[0];
+  const fromPath = path.parse(fromUri.path);
+  const toUri = vsc.Uri.file(
+    `/Users/simpzan/repo/notes/assets/${fromPath.base}`,
+  );
+  log(`copy: ${fromUri} -> ${toUri}`);
+  await vsc.workspace.fs.copy(fromUri, toUri);
+
+  const imagePath = `![${fromPath.name}](assets/${fromPath.base})`;
+  let editor = vsc.window.activeTextEditor;
+  editor.edit((edit) => {
+    let current = editor.selection;
+    if (current.isEmpty) edit.insert(current.start, imagePath);
+    else edit.replace(current, imagePath);
+  });
+}
+
 // this method is called when your extension iopenTextDocuments activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+  registerCommand(
+    context,
+    "markdown-preview-enhanced.insertImage",
+    handleInsertImage,
+  );
+
   // assume only one preview supported.
   const contentProvider = new MarkdownPreviewEnhancedView(context);
 
