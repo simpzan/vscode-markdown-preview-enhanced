@@ -16,6 +16,11 @@ let editorScrollDelay = Date.now();
 
 const vsc = vscode;
 const log = console.log.bind(console);
+const setConfig = (section: string, key: string, value: any) => {
+  vscode.workspace.getConfiguration(section).update(key, value);
+};
+const run = (cmd: string) => vsc.commands.executeCommand(cmd);
+
 function registerCommand(
   context: vscode.ExtensionContext,
   command: string,
@@ -47,6 +52,35 @@ async function handleInsertImage() {
   });
 }
 
+class CompactMode {
+  _compactMode: boolean = false;
+  toggle() {
+    const enable = !this._compactMode;
+    if (enable) this.enable();
+    else this.disable();
+    this._compactMode = enable;
+  }
+  disable() {
+    setConfig("editor", "lineNumbers", true);
+    setConfig("editor", "glyphMargin", true);
+    setConfig("workbench", "activityBar.visible", true);
+
+    run("workbench.action.closeSidebar");
+    run("workbench.action.toggleSidebarVisibility");
+
+    run("workbench.action.editorLayoutTwoColumns");
+
+    setTimeout(() => run("markdown-preview-enhanced.openPreviewToTheSide"), 10);
+  }
+  enable() {
+    run("workbench.action.closeSidebar");
+    run("workbench.action.editorLayoutSingle");
+    setConfig("workbench", "activityBar.visible", false);
+    setConfig("editor", "lineNumbers", false);
+    setConfig("editor", "glyphMargin", false);
+  }
+}
+
 // this method is called when your extension iopenTextDocuments activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -54,6 +88,10 @@ export function activate(context: vscode.ExtensionContext) {
     context,
     "markdown-preview-enhanced.insertImage",
     handleInsertImage,
+  );
+  const compactMode = new CompactMode();
+  registerCommand(context, "markdown-preview-enhanced.toggleCompactMode", () =>
+    compactMode.toggle(),
   );
 
   // assume only one preview supported.

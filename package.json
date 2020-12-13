@@ -127,6 +127,10 @@
       {
         "command": "markdown-preview-enhanced.insertImage",
         "title": "vsnote: insert image from local fs"
+      },
+      {
+        "command": "markdown-preview-enhanced.toggleCompactMode",
+        "title": "vsnote: toggle compact mode"
       }
     ],
     "configuration": {
