@@ -462,7 +462,12 @@ export class MarkdownPreviewEnhancedView {
 
     // set title
     previewPanel.title = `Preview ${path.basename(sourceUri.fsPath)}`;
-    previewPanel.reveal(viewOptions.viewColumn, viewOptions.preserveFocus);
+    if (
+      viewOptions.preserveFocus &&
+      viewOptions.viewColumn == vscode.ViewColumn.Two
+    ) {
+      previewPanel.reveal(vscode.ViewColumn.Two, true);
+    }
 
     // init markdown engine
     let initialLine: number | undefined;
