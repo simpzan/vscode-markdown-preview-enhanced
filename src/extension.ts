@@ -20,6 +20,24 @@ const setConfig = (section: string, key: string, value: any) => {
   vscode.workspace.getConfiguration(section).update(key, value);
 };
 const run = (cmd: string) => vsc.commands.executeCommand(cmd);
+function runShell(cmd) {
+  try {
+    console.info(`cmd: ${cmd}`);
+    const cp = require("child_process");
+    const output = cp.execSync(cmd);
+    const result = output.toString("utf8");
+    console.info(`result:\n${result}`);
+    return result.trim();
+  } catch (err) {
+    return null;
+  }
+}
+function resizeWindow(fullscreen: boolean) {
+  // https://eastmanreference.com/complete-list-of-applescript-key-codes
+  const key = fullscreen ? 46 : 44;
+  const src = `tell application "System Events" to key code ${key} using {option down, control down}`;
+  runShell(`osascript -e '${src}'`);
+}
 
 function registerCommand(
   context: vscode.ExtensionContext,
@@ -71,6 +89,7 @@ class CompactMode {
     run("workbench.action.editorLayoutTwoColumns");
 
     setTimeout(() => run("markdown-preview-enhanced.openPreviewToTheSide"), 10);
+    resizeWindow(true);
   }
   enable() {
     run("workbench.action.closeSidebar");
@@ -78,6 +97,7 @@ class CompactMode {
     setConfig("workbench", "activityBar.visible", false);
     setConfig("editor", "lineNumbers", false);
     setConfig("editor", "glyphMargin", false);
+    resizeWindow(false);
   }
 }
 
