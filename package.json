@@ -525,6 +525,7 @@
   },
   "activationEvents": [
     "onLanguage:markdown",
+    "onUri",
     "onCommand:markdown-preview-enhanced.openPreviewToTheSide"
   ],
   "husky": {

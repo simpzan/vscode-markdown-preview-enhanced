@@ -94,6 +94,13 @@ export function activate(context: vscode.ExtensionContext) {
     compactMode.toggle(),
   );
 
+  const handler = {
+    async handleUri(uri) {
+      if (uri.path === "/toggle-compact-mode") compactMode.toggle();
+    },
+  };
+  context.subscriptions.push(vsc.window.registerUriHandler(handler));
+
   // assume only one preview supported.
   const contentProvider = new MarkdownPreviewEnhancedView(context);
 
