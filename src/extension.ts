@@ -17,7 +17,7 @@ let editorScrollDelay = Date.now();
 const vsc = vscode;
 const log = console.log.bind(console);
 const setConfig = (section: string, key: string, value: any) => {
-  vscode.workspace.getConfiguration(section).update(key, value);
+  vscode.workspace.getConfiguration(section).update(key, value, true);
 };
 const run = (cmd: string) => vsc.commands.executeCommand(cmd);
 function runShell(cmd) {
